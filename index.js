@@ -32,14 +32,30 @@ app.post('/favorites', async (req, res) => {
     let db;
     try {
         db = await connect();
-        const { id, url, poke_name, height, weight, hp, attack, defense, special_attack, special_defense, speed } = req.body;
-        const query = `INSERT INTO fav_pokemon (id, url, poke_name, height, weight, hp, attack, defense, special_attack, special_defense, speed) VALUES (${id}, '${url}', '${poke_name}', ${height}, ${weight}, ${hp}, ${attack}, ${defense}, ${special_attack}, ${special_defense}, ${speed})`;    
+        const { id, url, name, height, weight, hp, attack, defense, special_attack, special_defense, speed } = req.body;
+        const query = `INSERT INTO fav_pokemon (id, url, name, height, weight, hp, attack, defense, special_attack, special_defense, speed) VALUES (${id}, '${url}', '${name}', ${height}, ${weight}, ${hp}, ${attack}, ${defense}, ${special_attack}, ${special_defense}, ${speed})`;    
         console.log(query);
             const [result] = await db.execute(query);
         res.json({ message: 'Pokemon favorito agregado' });
     } catch(err) {
         console.error('Ocurrió un error al agregar el favorito');
         res.json({ message: 'Ocurrió un error al agregar el favorito' });
+    } finally {
+        if (db) await db.end();
+    }
+});
+
+app.delete('/favorites/:id', async (req, res) => {
+    let db;
+    try {
+        db = await connect();
+        const { id } = req.params;
+        const query = `DELETE FROM fav_pokemon WHERE id = ${id}`;    
+        const [result] = await db.execute(query);
+        res.json({ message: 'Pokemon favorito eliminado' });
+    } catch(err) {
+        console.error('Ocurrió un error al eliminar el favorito');
+        res.json({ message: 'Ocurrió un error al eliminar el favorito' });
     } finally {
         if (db) await db.end();
     }
